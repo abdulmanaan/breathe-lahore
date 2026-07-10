@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from database import engine
+from sqlalchemy import text
 
 app = FastAPI(
     title="BreatheLahore API",
@@ -10,3 +12,11 @@ app = FastAPI(
 def health_check():
     """Simple endpoint to confirm the API is running."""
     return {"status": "ok"}
+
+@app.get("/health/db")
+async def database_health_check():
+    """Confirms the API can reach the PostgreSQL database."""
+    async with engine.connect() as conn:
+        result = await conn.execute(text("SELECT 1"))
+        result.scalar()
+    return {"database": "connected"}
