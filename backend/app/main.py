@@ -4,14 +4,23 @@ from app.database import engine, Base
 from sqlalchemy import text
 from app.models import AirQualityReading
 from app.routers.readings import router as readings_router
+from app.scheduler import start_scheduler, stop_scheduler
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Runs once at startup, create table that don't exist ye.
+    # Create missing tables and start the hourly scheduler on startup.
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    start_scheduler()
     yield
-    # Runs once at shutdown, close all database connections cleanly.
+    # Stop the scheduler and close all database connections cleanly.
+    stop_scheduler()
     await engine.dispose()
 
 app = FastAPI(
