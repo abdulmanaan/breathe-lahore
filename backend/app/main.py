@@ -4,6 +4,7 @@ from app.database import engine, Base
 from sqlalchemy import text
 from app.models import AirQualityReading
 from app.routers.readings import router as readings_router
+from app.routers.insights import router as insights_router
 from app.scheduler import start_scheduler, stop_scheduler
 import logging
 
@@ -31,6 +32,7 @@ app = FastAPI(
 )
 
 app.include_router(readings_router)
+app.include_router(insights_router)
 
 @app.get("/health")
 def health_check():
