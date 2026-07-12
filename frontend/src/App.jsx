@@ -1,29 +1,49 @@
 import { useEffect, useState } from 'react'
+import { fetchDailyTrend, fetchSafestHours, fetchSummary } from './api'
+import Header from './components/Header'
+import CurrentSummary from './components/CurrentSummary'
+import SafestHours from './components/SafestHours'
+import DailyTrend from './components/DailyTrend'
 
 export default function App() {
-  const [summary, setSummary] = useState(null)
+  const [data, setData] = useState(null)
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    fetch('http://localhost:8000/api/insights/summary')
-      .then((res) => res.json())
-      .then(setSummary)
-      .catch(() => setError('Could not reach the BreatheLahore API.'))
+    Promise.all([fetchSummary(), fetchSafestHours(), fetchDailyTrend()])
+      .then(([summary, safestHours, dailyTrend]) =>
+        setData({ summary, hours: safestHours.hours, trend: dailyTrend.trend })
+      )
+      .catch((err) => {
+        console.error('Dashboard data fetch failed:', err)
+        setError('Could not reach the BreatheLahore API. Is the backend running?')
+        })
   }, [])
 
-  if (error) return <p className="p-8 text-red-400">{error}</p>
-  if (!summary) return <p className="p-8 text-slate-400">Loading…</p>
-
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center gap-4">
-      <p className="text-slate-400 text-sm uppercase tracking-widest">Lahore Air Quality</p>
-      <h1 className="text-7xl font-bold" style={{ color: summary.category.color }}>
-        {summary.us_aqi}
-      </h1>
-      <p className="text-xl font-medium" style={{ color: summary.category.color }}>
-        {summary.category.level}
-      </p>
-      <p className="max-w-md text-center text-slate-300">{summary.category.advice}</p>
+    <div className="min-h-screen bg-ink text-white">
+      <main className="mx-auto max-w-5xl px-5 py-8 sm:py-12 space-y-10">
+        <Header />
+
+        {error && <p className="font-mono text-sm text-red-400">{error}</p>}
+        {!error && !data && <p className="font-mono text-sm text-fog animate-pulse">Loading readings…</p>}
+
+        {data && (
+          <>
+            <CurrentSummary summary={data.summary} />
+            <div className="grid gap-6 lg:grid-cols-2">
+              <SafestHours hours={data.hours} />
+              <DailyTrend trend={data.trend} />
+            </div>
+          </>
+        )}
+
+        <footer className="border-t border-line pt-5">
+          <p className="font-mono text-xs text-fog">
+            Data: Open-Meteo Air Quality API · Updated hourly
+          </p>
+        </footer>
+      </main>
     </div>
   )
 }
