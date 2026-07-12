@@ -7,6 +7,7 @@ from app.routers.readings import router as readings_router
 from app.routers.insights import router as insights_router
 from app.scheduler import start_scheduler, stop_scheduler
 import logging
+from app.config import settings
 from fastapi.middleware.cors import CORSMiddleware
 
 logging.basicConfig(
@@ -34,7 +35,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=settings.cors_origins.split(","),
     allow_methods=["*"],
     allow_headers=["*"],
 )
