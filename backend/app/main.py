@@ -43,6 +43,15 @@ app.add_middleware(
 app.include_router(readings_router)
 app.include_router(insights_router)
 
+@app.get("/")
+def root():
+    """API welcome message with pointers to documentation."""
+    return {
+        "service": "BreatheLahore API",
+        "docs": "/docs",
+        "health": "/health",
+    }
+
 @app.get("/health")
 def health_check():
     """Simple endpoint to confirm the API is running."""
