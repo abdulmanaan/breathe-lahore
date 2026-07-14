@@ -1,0 +1,16 @@
+name: Hourly air quality fetch
+
+on:
+  schedule:
+    - cron: "15 * * * *"
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call refresh endpoint
+        run: |
+          curl --fail --silent --show-error -X POST \
+            "${{ secrets.API_BASE_URL }}/api/readings/refresh"
+            

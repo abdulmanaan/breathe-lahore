@@ -1,4 +1,5 @@
 from datetime import datetime
+from zoneinfo import ZoneInfo
 import httpx
 from sqlalchemy.dialects.postgresql import insert
 from app.database import async_session
@@ -7,6 +8,8 @@ from app.models import AirQualityReading
 # Coordinates for Lahore
 LAHORE_LAT = 31.5497
 LAHORE_LON = 74.3436
+
+LAHORE_TZ = ZoneInfo("Asia/Karachi")
 
 API_URL = "https://air-quality-api.open-meteo.com/v1/air-quality"
 
@@ -41,7 +44,7 @@ async def fetch_and_store_readings(past_days: int = 1) -> int:
 
     hourly = data["hourly"]
     timestamps = hourly["time"]
-    now = datetime.now()
+    now = datetime.now(LAHORE_TZ).replace(tzinfo=None)
 
     rows = []
     # Loop through each hourly reading

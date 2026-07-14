@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import {
   Area,
   AreaChart,
@@ -7,17 +8,28 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import { fetchDailyTrend } from '../api'
+import RangeSelector from './RangeSelector'
 
 function dayLabel(dateString) {
   return new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
-export default function DailyTrend({ trend }) {
+export default function DailyTrend({ initialTrend }) {
+  const [days, setDays] = useState(14)
+  const [trend, setTrend] = useState(initialTrend)
+
+  useEffect(() => {
+    fetchDailyTrend(days)
+      .then((data) => setTrend(data.trend))
+      .catch((err) => console.error('Trend fetch failed:', err))
+  }, [days])
+
   return (
     <section className="border border-line bg-panel p-5 sm:p-6">
-      <div className="flex items-baseline justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 gap-3">
         <h2 className="font-display font-medium text-white">Daily trend</h2>
-        <p className="font-mono text-xs text-fog">avg / worst per day</p>
+        <RangeSelector value={days} onChange={setDays} />
       </div>
 
       <ResponsiveContainer width="100%" height={240}>

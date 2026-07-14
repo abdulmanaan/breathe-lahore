@@ -1,4 +1,7 @@
+import { useEffect, useState } from 'react'
 import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { fetchSafestHours } from '../api'
+import RangeSelector from './RangeSelector'
 
 function hourLabel(hour) {
   if (hour === 0) return '12a'
@@ -15,17 +18,27 @@ function barColor(aqi) {
   return '#7f1d1d'
 }
 
-export default function SafestHours({ hours }) {
+export default function SafestHours({ initialHours }) {
+  const [days, setDays] = useState(7)
+  const [hours, setHours] = useState(initialHours)
+
+  useEffect(() => {
+    fetchSafestHours(days)
+      .then((data) => setHours(data.hours))
+      .catch((err) => console.error('Safest hours fetch failed:', err))
+  }, [days])
+
+  if (!hours || hours.length === 0) return null
   const best = hours.reduce((a, b) => (a.avg_aqi <= b.avg_aqi ? a : b))
 
   return (
     <section className="border border-line bg-panel p-5 sm:p-6">
-      <div className="flex items-baseline justify-between mb-1">
+      <div className="flex items-center justify-between mb-1 gap-3">
         <h2 className="font-display font-medium text-white">Safest hours</h2>
-        <p className="font-mono text-xs text-fog">7-day hourly average</p>
+        <RangeSelector value={days} onChange={setDays} />
       </div>
       <p className="font-mono text-sm text-emerald-400 mb-4">
-        Cleanest air around {hourLabel(best.hour)} — avg AQI {best.avg_aqi}
+        Cleanest air around {hourLabel(best.hour)} (avg AQI {best.avg_aqi})
       </p>
 
       <ResponsiveContainer width="100%" height={240}>

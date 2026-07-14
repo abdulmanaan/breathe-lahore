@@ -28,7 +28,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="BreatheLahore API",
-    description="Air quality intelligence for Lahore - trends, insights, and health guidance.",
+    description="Air quality intelligence for Lahore: trends, insights, and health guidance.",
     version="0.1.0",
     lifespan=lifespan
 )
