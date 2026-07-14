@@ -1,5 +1,6 @@
 function formatMeasuredAt(isoString) {
-    const date = new Date(isoString.replace('+00.00', ''))
+    const clock = new Date(isoString.replace(/(Z|[+-]\d{2}:?\d{2})$/, ''))
+    const date = new Date(clock)
     return date.toLocaleString('en-US', {
         hour: 'numeric',
         minute: '2-digit',
