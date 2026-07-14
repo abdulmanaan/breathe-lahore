@@ -2,7 +2,7 @@ name: Hourly air quality fetch
 
 on:
   schedule:
-    - cron: "15 * * * *"
+    - cron: "15,45 * * * *"
   workflow_dispatch:
 
 jobs:
@@ -12,5 +12,7 @@ jobs:
       - name: Call refresh endpoint
         run: |
           curl --fail --silent --show-error -X POST \
+            --retry 5 --retry-delay 15 --retry-all-errors \
+            --max-time 120 \
             "${{ secrets.API_BASE_URL }}/api/readings/refresh"
             
