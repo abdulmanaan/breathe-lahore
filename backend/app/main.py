@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from app.database import engine, Base
 from sqlalchemy import text
 from app.models import AirQualityReading
@@ -39,6 +39,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.middleware("http")
+async def no_cache_api_responses(request: Request, call_next):
+    """Tell browsers not to cache API responses, readings change hourly."""
+    response = await call_next(request)
+    if request.url.path.startswith("/api/"):
+        response.headers["Cache-Control"] = "no-store"
+    return response
 
 app.include_router(readings_router)
 app.include_router(insights_router)
