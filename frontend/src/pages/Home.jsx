@@ -68,7 +68,7 @@ export default function Home() {
       <section className="max-w-xl space-y-3">
         <h3 className="font-display text-lg font-medium text-white">What do the numbers mean?</h3>
         <p className="text-sm text-slate-400 leading-relaxed">
-          The dashboard uses the US Air Quality Index (AQI), a scale from 0 to 500.
+          The app uses the US Air Quality Index (AQI), a scale from 0 to 500.
           Think of it as a thermometer for the air: below 50 is clean, above 150 means
           everyone should limit time outdoors, and above 300 is a health emergency.
           Every reading on the dashboard is color-coded, so you can judge the situation

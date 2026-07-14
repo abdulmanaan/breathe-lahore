@@ -4,9 +4,9 @@ import { fetchSafestHours } from '../api'
 import RangeSelector from './RangeSelector'
 
 function hourLabel(hour) {
-  if (hour === 0) return '12a'
-  if (hour === 12) return '12p'
-  return hour < 12 ? `${hour}a` : `${hour - 12}p`
+  if (hour === 0) return '12AM'
+  if (hour === 12) return '12PM'
+  return hour < 12 ? `${hour}AM` : `${hour - 12}PM`
 }
 
 function barColor(aqi) {
